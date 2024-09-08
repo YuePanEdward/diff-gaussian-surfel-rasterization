@@ -263,9 +263,9 @@ __global__ void preprocessCUDA(int P, int D, int M,
 	glm::mat3 R = quaternion2rotmat(rotations[idx]);
 
 	bool surface = config[0] > 0, pix_depth = config[2] > 0;// apply_cutoff = config[4] > 0, update_cutoff = config[5] > 0;
-	float3 n_view;
+	bool front_only = config[4] > 0;
 
-	// bool front_only = config[4] > 0;
+	float3 n_view;
 
 	if (surface) {
 		// compute camera normal from rotation matrix
@@ -277,11 +277,11 @@ __global__ void preprocessCUDA(int P, int D, int M,
 		float3 ax1_view = transformVec4x3({R[0][1], R[1][1], R[2][1]}, viewmatrix);
 		// printf("here\n");
 		// if (!front_facing(n_view, p_view, &viewCos[idx], prefiltered)) return; // cull backfacing points
-		// if (front_only) {
-		// 	if (!front_facing(n_view, p_view, &viewCos[idx], prefiltered)){ 
-		// 		return; // cull backfacing points
-		// 	}
-		// }
+		if (front_only) {
+			if (!front_facing(n_view, p_view, &viewCos[idx], prefiltered)){ 
+				return; // cull backfacing points
+			}
+		}
 		// printf("points left: %.8f, %.8f, %.8f\n", p_view.x, p_view.y, p_view.z);
 		normal[idx * 3 + 0] = n_view.x;
 		normal[idx * 3 + 1] = n_view.y;
