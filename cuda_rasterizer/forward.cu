@@ -258,7 +258,7 @@ __global__ void preprocessCUDA(int P, int D, int M,
 
 	// Perform near culling, quit if outside.
 	float2 point_image = { ndc2Pix(p_proj.x, W, prcppoint[0]), ndc2Pix(p_proj.y, H, prcppoint[1]) };
-	if (!in_frustum(p_view, p_proj, point_image, patchbbox, prefiltered)) return;
+	if (!in_frustum2(p_view, p_proj, point_image, patchbbox, prefiltered)) return;
 
 	glm::mat3 R = quaternion2rotmat(rotations[idx]);
 

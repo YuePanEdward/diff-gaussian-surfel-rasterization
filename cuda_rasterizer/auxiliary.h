@@ -143,6 +143,33 @@ __forceinline__ __device__ float sigmoid(float x)
 	return 1.0f / (1.0f + expf(-x));
 }
 
+__forceinline__ __device__ bool in_frustum2(
+	float3& p_view,
+	float3& p_proj, 
+	float2& p_pix, 
+	const float* patchbbox,
+	bool prefiltered)
+{
+
+	// if ((p_proj.x < -1.3 || p_proj.x > 1.3 || p_proj.y < -1.3 || p_proj.y > 1.3))
+	// 	printf("p_proj out of frustum! %.8f, %.8f, %.8f\n", p_proj.x, p_proj.y, p_proj.z);
+	// float expand = 1.1;
+	// if (p_view.z < 0 || ((p_proj.x < -expand || p_proj.x > expand || p_proj.y < -expand || p_proj.y > expand)))
+	float x0 = patchbbox[1], y0 = patchbbox[0], x1 = patchbbox[3], y1 = patchbbox[2];
+	float w = x1 - x0, h = y1 - y0;
+	float expand = 0.2;
+	if (p_view.z < 0 || p_pix.x < x0 - w * expand || p_pix.x >= x1 + w * expand || p_pix.y < y0 - h * expand || p_pix.y >= y1 + h * expand)
+	{
+		if (prefiltered)
+		{
+			printf("Point is filtered although prefiltered is set. This shouldn't happen!");
+			__trap();
+		}
+		return false;
+	}
+	return true;
+}
+
 __forceinline__ __device__ bool in_frustum(
 	float3& p_view,
 	float3& p_proj, 

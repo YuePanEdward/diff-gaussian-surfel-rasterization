@@ -61,8 +61,8 @@ __global__ void checkFrustum(int P,
 	if (idx >= P)
 		return;
 
-	// float3 p_view;
-	// present[idx] = in_frustum(idx, orig_points, viewmatrix, projmatrix, false, p_view);
+	float3 p_view;
+	present[idx] = in_frustum(idx, orig_points, viewmatrix, projmatrix, false, p_view);
 }
 
 // Generates one key/value pair for all Gaussian / tile overlaps. 
